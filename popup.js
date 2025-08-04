@@ -19,7 +19,25 @@ function handler(event) {
     return;
   }
 
-  const provider = new ethers.providers.JsonRpcProvider(
+  // Basic address format validation
+  if (!address.startsWith("0x") || address.length !== 42) {
+    alert(
+      "Please enter a valid Ethereum address (should start with 0x and be 42 characters long)"
+    );
+    document.getElementById("center").style.display = "none";
+    return;
+  }
+
+  // Validate private key format
+  if (!private_key.startsWith("0x") || private_key.length !== 66) {
+    alert(
+      "Please enter a valid private key (should start with 0x and be 66 characters long)"
+    );
+    document.getElementById("center").style.display = "none";
+    return;
+  }
+
+  const provider = new ethers.JsonRpcProvider(
     "https://eth-sepolia.g.alchemy.com/v2/vEWDw8Bnbgz1IedM5nNzqQNKNAtA6gml"
   );
 
@@ -27,7 +45,7 @@ function handler(event) {
 
   const tx = {
     to: address,
-    value: ethers.utils.parseEther(amount),
+    value: ethers.parseEther(amount), // Fixed: removed .utils
   };
 
   wallet
@@ -74,7 +92,8 @@ function checkBalance() {
   balanceBtn.innerText = "Checking...";
   balanceBtn.disabled = true;
 
-  const provider = new ethers.providers.JsonRpcProvider(
+  // Fixed: Use consistent provider initialization
+  const provider = new ethers.JsonRpcProvider(
     "https://eth-sepolia.g.alchemy.com/v2/vEWDw8Bnbgz1IedM5nNzqQNKNAtA6gml"
   );
 
@@ -83,7 +102,7 @@ function checkBalance() {
   provider
     .getBalance(addressToCheck)
     .then((balance) => {
-      const balanceInETH = ethers.utils.formatEther(balance);
+      const balanceInETH = ethers.formatEther(balance); // Fixed: removed .utils
 
       console.log(`Balance: ${balanceInETH} ETH`);
 
