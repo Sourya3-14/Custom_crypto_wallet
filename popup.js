@@ -1,62 +1,110 @@
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("form").addEventListener("click", handler);
+  document
+    .getElementById("check_balance")
+    .addEventListener("click", checkBalance);
 });
 
 function handler(event) {
-  document.getElementById("center").style.display = "flex";//loading cycle
+  document.getElementById("center").style.display = "flex";
+
   const private_key = document.getElementById("private_key").value;
   const amount = document.getElementById("amount").value;
   const address = document.getElementById("address").value;
 
+  // Validation
+  if (!private_key || !amount || !address) {
+    alert("Please fill in all fields");
+    document.getElementById("center").style.display = "none";
+    return;
+  }
+
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://eth-mainnet.g.alchemy.com/v2/vEWDw8Bnbgz1IedM5nNzqQNKNAtA6gml"
+    "https://eth-sepolia.g.alchemy.com/v2/vEWDw8Bnbgz1IedM5nNzqQNKNAtA6gml"
   );
 
   let wallet = new ethers.Wallet(private_key, provider);
 
   const tx = {
     to: address,
-    value: ethers.parseEthers(amount),
+    value: ethers.utils.parseEther(amount),
   };
 
-  var a = document.getElementById("link");
-  a.href = "some link url";
+  wallet
+    .sendTransaction(tx)
+    .then((txObj) => {
+      console.log("TxHash", txObj.hash);
+      document.getElementById("center").style.display = "none";
 
-  wallet.sendTransaction(tx).then((txObj) => {
-    console.log("TxHash", txObj.hash);
-    document.getElementById("center").style.display = "none";
-    const a = document.getElementById("link");
-    a.href = `https://sepolia.etherscan.io//tx/${txObj.hash}`;
-    document.getElementById("link").style.display = "block";
-  });
+      const a = document.getElementById("link");
+      a.href = `https://sepolia.etherscan.io/tx/${txObj.hash}`;
+      document.getElementById("link").style.display = "block";
+    })
+    .catch((error) => {
+      console.error("Transaction failed:", error);
+      document.getElementById("center").style.display = "none";
+      alert("Transaction failed: " + error.message);
+    });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("check_balance")
-    .addEventListener("click", checkBalance);
-});
-
+// Check balance of the address in the "Transfer Address" field
 function checkBalance() {
+  const addressToCheck = document.getElementById("address").value;
+
+  // Validation - make sure address is provided
+  if (!addressToCheck) {
+    alert(
+      "Please enter an address in the 'Transfer Address' field to check its balance"
+    );
+    return;
+  }
+
+  // Basic address format validation
+  if (!addressToCheck.startsWith("0x") || addressToCheck.length !== 42) {
+    alert(
+      "Please enter a valid Ethereum address (should start with 0x and be 42 characters long)"
+    );
+    return;
+  }
+
   document.getElementById("center").style.display = "flex";
 
-  //Provider
+  const balanceBtn = document.getElementById("check_balance");
+  const originalText = balanceBtn.innerText;
+  balanceBtn.innerText = "Checking...";
+  balanceBtn.disabled = true;
+
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://eth-mainnet.g.alchemy.com/v2/vEWDw8Bnbgz1IedM5nNzqQNKNAtA6gml"
+    "https://eth-sepolia.g.alchemy.com/v2/vEWDw8Bnbgz1IedM5nNzqQNKNAtA6gml"
   );
 
-  const signer = provider.getSigner();
+  console.log("Checking balance for address:", addressToCheck);
 
-  console.log(signer);
-  const address = document.getElementById("address").value;
+  provider
+    .getBalance(addressToCheck)
+    .then((balance) => {
+      const balanceInETH = ethers.utils.formatEther(balance);
 
-  provider.getBalance(address).then((balance) => {
-    //convert a currency unit from wei to ether
-    const balanceInETH = ethers.formatEther(balance);
-    document.getElementById(
-      "check_balance"
-    ).innerText = `Your Balance: ${balanceInETH} ETH`;
-    console.log(`balance: ${balanceInETH} ETH`);
-    document.getElementById("center").style.display = "none";
-  });
+      console.log(`Balance: ${balanceInETH} ETH`);
+
+      // Show the balance on the button
+      balanceBtn.innerText = `Balance: ${parseFloat(balanceInETH).toFixed(
+        6
+      )} ETH`;
+
+      document.getElementById("center").style.display = "none";
+
+      // Reset button after 5 seconds
+      setTimeout(() => {
+        balanceBtn.innerText = originalText;
+        balanceBtn.disabled = false;
+      }, 5000);
+    })
+    .catch((error) => {
+      console.error("Balance check failed:", error);
+      document.getElementById("center").style.display = "none";
+      balanceBtn.innerText = originalText;
+      balanceBtn.disabled = false;
+      alert("Failed to check balance. Please verify the address is correct.");
+    });
 }
