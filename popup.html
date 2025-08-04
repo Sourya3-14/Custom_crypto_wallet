@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Wallet</title>
+    <link rel = "stylesheet" href ="style.css"/>
+</head>
+<body>
+    <div class="card1">
+        <div class="card2">
+            <div class="form">
+                <p id ="heading">@theBlockChainencoaders</p>
+                <div class="field">
+                    <input id = "amount" class = "input-field" type="number" placeholder="amount"/>
+                </div>
+                <div class="field">
+                    <textarea id = "private_key" class ="input-field" type = "text" autocomplete="off" name = "" col = "10" rows = "3"></textarea>
+                </div>
+                <div class="field">
+                    <input id = "address" class = "input-field" type="text" placeholder="Transfer Address" />
+                </div>
+                <p class = "space"></p>
+                <!-- loader -->
+                 <div id = "center" class="center">
+                    <div class = "loader">
+                        <div class="bar1"></div>
+                        <div class="bar2"></div>
+                        <div class="bar3"></div>
+                        <div class="bar4"></div>
+                        <div class="bar5"></div>
+                        <div class="bar6"></div>
+                        <div class="bar7"></div>
+                        <div class="bar8"></div>
+                        <div class="bar9"></div>
+                        <div class="bar10"></div>
+                        <div class="bar11"></div>
+                        <div class="bar12"></div>
+                    </div>
+                 </div>
+                 <small>
+                    <a target = "_blank" id="link" href="">CHECK YOUR TRANSACTION</a>
+                 </small>
+                 <!-- loader -->
+                  <div class="btn">
+                    <button id ="form" class="button1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Transfer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                  </div>
+                  <button id = "check_balance" class="button3">Check Balance</button>
+            </div>
+        </div>
+    </div>
+    <script src ="./node_modules/ethers/dist/ethers.js"></script>
+    <script src ="./popup.js"></script>
+</body>
+</html>
