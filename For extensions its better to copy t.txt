@@ -1,0 +1,3 @@
+For extensions its better to copy the whole library instead of using a script with a link cause sometimes extensions don't allow calling 
+
+yarn add ethers
